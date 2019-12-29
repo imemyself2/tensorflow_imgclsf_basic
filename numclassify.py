@@ -15,3 +15,8 @@ testset, testlabel = mndata.load_testing()
 #pp = pprint.PrettyPrinter(width = 50,compact=False)
 #pp.pprint(image[0])
 
+# initialize parameters
+
+parameters = []
+W1 = np.random.randn()
+
