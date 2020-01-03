@@ -6,6 +6,9 @@ import tensorflow as tf
 from sklearn.utils import shuffle
 #import pickle
 
+####################
+### LOAD DATASET ###
+####################
 DOGDATADIR = "D:\\Work\\College\\Spring 2020\\DeepLearningCoursera-2\\training_set\\training_set\\dogs"
 CATDATADIR = "D:\\Work\\College\\Spring 2020\\DeepLearningCoursera-2\\training_set\\training_set\\cats"
 
@@ -51,6 +54,7 @@ except IOError:
     outfile2 = open('catsSaved', 'wb')
     np.save(outfile2, cat_data)
     outfile2.close()
+    print("save files created for future runs.")
 
 dog_label = np.ones((dog_data.shape[0], 1))
 cat_label = np.zeros((cat_data.shape[0],1))
@@ -60,7 +64,21 @@ Y_train_orig = np.concatenate((dog_label, cat_label), axis = 0)
 
 X_train, Y_train = shuffle(X_train_orig, Y_train_orig, random_state = 0)
 
-# Sanity check
+### Sanity check ###
+'''
 plt.imshow(X_train[1], cmap = 'gray')
 plt.show()
 print(Y_train[1])
+'''
+
+## Create placeholders
+tf.compat.v1.disable_eager_execution()
+X = tf.compat.v1.placeholder(tf.float32, X_train.shape, name = 'X')
+Y = tf.compat.v1.placeholder(tf.float32, Y_train.shape, name = 'Y')
+
+## Initializing parameters
+initializer = tf.initializers.GlorotUniform()
+W1 = tf.Variable(initializer(shape = (24, 24, 1, 4)), name = "W1")
+# output = (201, 201, 4)
+W2 = tf.Variable(initializer(shape = (3, 3, 4, 4)), name = "W2")
+
