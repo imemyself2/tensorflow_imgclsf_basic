@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import cv2
 import tensorflow as tf
 from sklearn.utils import shuffle
-#import pickle
+#import pickle -- not used (instead used np.save and np.load)
 
 ####################
 ### LOAD DATASET ###
@@ -14,6 +14,7 @@ CATDATADIR = "D:\\Work\\College\\Spring 2020\\DeepLearningCoursera-2\\training_s
 
 IMG_SIZE = 224
 dog_arr = []
+
 cat_arr = []
 
 try:
@@ -31,6 +32,7 @@ except IOError:
         try: 
             dog_img = cv2.imread(os.path.join(DOGDATADIR, img), cv2.IMREAD_GRAYSCALE)
             dog_img = cv2.resize(dog_img, (IMG_SIZE, IMG_SIZE))
+            print(dog_img.shape)
             dog_arr.append(dog_img)
         except:
             continue
@@ -47,6 +49,8 @@ except IOError:
 
     dog_data = np.asanyarray(dog_arr)
     cat_data = np.asanyarray(cat_arr)
+    dog_data = np.expand_dims(dog_data, axis=4)
+    cat_data = np.expand_dims(cat_data, axis=4)
 
     outfile = open('dogsSaved', 'wb')
     np.save(outfile, dog_data)
@@ -63,6 +67,7 @@ X_train_orig = np.concatenate((dog_data, cat_data), axis = 0)
 Y_train_orig = np.concatenate((dog_label, cat_label), axis = 0)
 
 X_train, Y_train = shuffle(X_train_orig, Y_train_orig, random_state = 0)
+print(X_train.shape)
 
 ### Sanity check ###
 '''
@@ -82,3 +87,9 @@ W1 = tf.Variable(initializer(shape = (24, 24, 1, 4)), name = "W1")
 # output = (201, 201, 4)
 W2 = tf.Variable(initializer(shape = (3, 3, 4, 4)), name = "W2")
 
+### Forw prop ###
+'''
+Z1 = tf.nn.conv2d(X, W1, strides = [1, 1, 1, 1], padding = 'SAME')
+A1 = tf.nn.relu(Z1)
+P1 = tf.nn.max_pool(A1, ksize = [1, 8, 8, 1], padding = 'SAME')
+'''
