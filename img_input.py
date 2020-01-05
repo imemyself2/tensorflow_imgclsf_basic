@@ -5,12 +5,12 @@ import os
 import cv2
 
 def imginput(DOGDATADIR, CATDATADIR):
-    IMG_SIZE = 224
+    IMG_SIZE = 112
     dog_arr = []
     cat_arr = []
 
-    dog_data = np.empty(shape=(4000, 224, 224))
-    cat_data = np.empty(shape=(4000, 224, 224))
+    dog_data = np.empty(shape=(4000, 112, 112))
+    cat_data = np.empty(shape=(4000, 112, 112))
 
 
     try:
@@ -45,10 +45,10 @@ def imginput(DOGDATADIR, CATDATADIR):
         dog_data = np.expand_dims(dog_data, axis=4)
         cat_data = np.expand_dims(cat_data, axis=4)
 
-        outfile = open('dogsSaved', 'wb')
+        outfile = open(dogpath, 'wb')
         np.save(outfile, dog_data)
         outfile.close()
-        outfile2 = open('catsSaved', 'wb')
+        outfile2 = open(catpath, 'wb')
         np.save(outfile2, cat_data)
         outfile2.close()
         print("save files created for future runs.")
