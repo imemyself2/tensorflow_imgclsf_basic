@@ -2,8 +2,11 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import cv2
-import tensorflow as tf
 from sklearn.utils import shuffle
+import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+tf.compat.v1.disable_eager_execution()
+
 
 #import pickle -- not used (instead used np.save and np.load)
 
@@ -17,7 +20,7 @@ IMG_SIZE = 224
 dog_arr = []
 cat_arr = []
 
-dog_data = np.empty(shape=(4005, 224, 224))
+dog_data = np.empty(shape=(4000, 224, 224))
 cat_data = np.empty(shape=(4000, 224, 224))
 
 
@@ -70,7 +73,16 @@ X_train_orig = np.concatenate((dog_data, cat_data), axis = 0)
 Y_train_orig = np.concatenate((dog_label, cat_label), axis = 0)
 
 X_train, Y_train = shuffle(X_train_orig, Y_train_orig, random_state = 0)
-print(X_train.shape)
+X_train = X_train/225
+
+
+## Create mini-batches
+minibatches_X = np.array_split(X_train, 16, axis = 0)
+minibatches_Y = np.array_split(Y_train, 16, axis = 0)
+
+
+print(minibatches_Y[0].shape)
+
 
 ### Sanity check ###
 '''
@@ -80,9 +92,8 @@ print(Y_train[1])
 '''
 
 ## Create placeholders
-tf.compat.v1.disable_eager_execution()
-X = tf.compat.v1.placeholder(tf.float32, X_train.shape, name = 'X')
-Y = tf.compat.v1.placeholder(tf.float32, Y_train.shape, name = 'Y')
+X = tf.compat.v1.placeholder(tf.float32, (500, 224, 224, 1), name = 'X')
+Y = tf.compat.v1.placeholder(tf.float32, (500, 1), name = 'Y')
 
 ## Initializing parameters
 initializer = tf.initializers.GlorotUniform()
@@ -101,4 +112,33 @@ A2 = tf.nn.relu(Z2)
 P2 = tf.nn.max_pool(A2, ksize = [1, 4, 4, 1], strides = [1, 4, 4, 1], padding = "SAME")
 
 F = tf.compat.v1.layers.flatten(P2)
-Z3 = tf.nn.sigmoid()
+Z3 = tf.compat.v1.layers.dense(F, 1)
+
+cost = tf.reduce_mean(tf.nn.softmax(Z3))
+optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
+init = tf.compat.v1.global_variables_initializer()
+with tf.compat.v1.Session() as sess:
+    sess.run(init)
+    minibatch_cost = 0
+    i=0
+    for i in range(16):
+        print("HERE")
+    # for epoch in range(10):
+    #     minibatch_cost = 0
+    #     for i in range(16):
+    #         _, t_cost = sess.run([optimizer, cost], feed_dict={X:minibatches_X[i], Y:minibatches_Y[i]})
+    #         minibatch_cost += t_cost/16
+    #     print("Cost after epoch %i: %f"%(epoch, minibatch_cost))
+        l , t_cost = sess.run([optimizer, cost], feed_dict={X:minibatches_X[i]})
+        
+        print("Done")
+        #minibatch_cost+=t_cost/16
+        print("Cost :"+ t_cost)
+        
+    
+    prediction = tf.argmax(Z3, 1)
+    correct_pred = tf.equal(prediction, tf.argmax(Y, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, "float"))
+    print(accuracy)
+    train_acc = accuracy.eval({X:X_train, Y:Y_train})
+    print("Train accuracy: "+train_acc)
