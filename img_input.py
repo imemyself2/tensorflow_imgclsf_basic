@@ -4,14 +4,14 @@ from sklearn.utils import shuffle
 import os
 import cv2
 
-IMG_SIZE = 112
-def imginput(DOGDATADIR, CATDATADIR):
+
+def imginput(DOGDATADIR, CATDATADIR, IMG_SIZE):
     
     dog_arr = []
     cat_arr = []
 
-    dog_data = np.empty(shape=(4000, 112, 112))
-    cat_data = np.empty(shape=(4000, 112, 112))
+    dog_data = np.empty(shape=(4000, IMG_SIZE, IMG_SIZE, 3))
+    cat_data = np.empty(shape=(4000, IMG_SIZE, IMG_SIZE, 3))
 
 
     try:
@@ -26,7 +26,7 @@ def imginput(DOGDATADIR, CATDATADIR):
         
         for img in os.listdir(DOGDATADIR):
             try: 
-                dog_img = cv2.imread(os.path.join(DOGDATADIR, img), cv2.IMREAD_GRAYSCALE)
+                dog_img = cv2.imread(os.path.join(DOGDATADIR, img))
                 dog_img = cv2.resize(dog_img, (IMG_SIZE, IMG_SIZE))
                 dog_arr.append(dog_img)
             except:
@@ -34,7 +34,7 @@ def imginput(DOGDATADIR, CATDATADIR):
         
         for img in os.listdir(CATDATADIR):
             try:
-                cat_img = cv2.imread(os.path.join(CATDATADIR, img), cv2.IMREAD_GRAYSCALE)
+                cat_img = cv2.imread(os.path.join(CATDATADIR, img))
                 cat_img = cv2.resize(cat_img,(IMG_SIZE, IMG_SIZE))
                 cat_arr.append(cat_img)
             except:
@@ -43,8 +43,8 @@ def imginput(DOGDATADIR, CATDATADIR):
 
         dog_data = np.asanyarray(dog_arr)
         cat_data = np.asanyarray(cat_arr)
-        dog_data = np.expand_dims(dog_data, axis=4)
-        cat_data = np.expand_dims(cat_data, axis=4)
+        # dog_data = np.expand_dims(dog_data, axis=4)
+        # cat_data = np.expand_dims(cat_data, axis=4)
 
         outfile = open(dogpath, 'wb')
         np.save(outfile, dog_data)
@@ -66,12 +66,12 @@ def imginput(DOGDATADIR, CATDATADIR):
     X_train = X_train/225
     return X_train, Y_train
 
-def load_test_img(DOGTESTIMG, CATTESTIMG):
+def load_test_img(DOGTESTIMG, CATTESTIMG, IMG_SIZE):
     dog_arr = []
     cat_arr = []
 
-    dog_data = np.empty(shape=(1012, 112, 112))
-    cat_data = np.empty(shape=(1011, 112, 112))
+    dog_data = np.empty(shape=(1012, IMG_SIZE, IMG_SIZE))
+    cat_data = np.empty(shape=(1011, IMG_SIZE, IMG_SIZE))
 
 
     try:
@@ -86,7 +86,7 @@ def load_test_img(DOGTESTIMG, CATTESTIMG):
         
         for img in os.listdir(DOGTESTIMG):
             try: 
-                dog_img = cv2.imread(os.path.join(DOGTESTIMG, img), cv2.IMREAD_GRAYSCALE)
+                dog_img = cv2.imread(os.path.join(DOGTESTIMG, img))
                 dog_img = cv2.resize(dog_img, (IMG_SIZE, IMG_SIZE))
                 dog_arr.append(dog_img)
             except:
@@ -94,7 +94,7 @@ def load_test_img(DOGTESTIMG, CATTESTIMG):
         
         for img in os.listdir(CATTESTIMG):
             try:
-                cat_img = cv2.imread(os.path.join(CATTESTIMG, img), cv2.IMREAD_GRAYSCALE)
+                cat_img = cv2.imread(os.path.join(CATTESTIMG, img))
                 cat_img = cv2.resize(cat_img,(IMG_SIZE, IMG_SIZE))
                 cat_arr.append(cat_img)
             except:
@@ -103,8 +103,8 @@ def load_test_img(DOGTESTIMG, CATTESTIMG):
 
         dog_data = np.asanyarray(dog_arr)
         cat_data = np.asanyarray(cat_arr)
-        dog_data = np.expand_dims(dog_data, axis=4)
-        cat_data = np.expand_dims(cat_data, axis=4)
+        # dog_data = np.expand_dims(dog_data, axis=4)
+        # cat_data = np.expand_dims(cat_data, axis=4)
 
         outfile = open(dogpath, 'wb')
         np.save(outfile, dog_data)
