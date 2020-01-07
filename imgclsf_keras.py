@@ -37,60 +37,29 @@ except:
 
     model = Sequential()
 
-    # model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(64, 64, 3)))
-    # model.add(MaxPooling2D((2, 2)))
-    # model.add(Flatten())
-    # model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
-    # model.add(Dense(1, activation='sigmoid'))
+    model.add(Conv2D(32, kernel_size=(3,3), input_shape=(64,64,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
+    model.add(MaxPooling2D((2,2)))
+    model.add(Dropout(0.4))
 
-    # model.add(Conv2D(32, kernel_size = (3,3), strides = (2,2), input_shape = (64,64,3), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(BatchNormalization(axis = 3))
-    # model.add(Activation('relu'))
+    model.add(Conv2D(32, kernel_size=(3,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
+    model.add(MaxPooling2D((2,2)))
+    model.add(Dropout(0.4))
 
-    # model.add(Conv2D(32, kernel_size = (3,3), strides = (2,2), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(BatchNormalization(axis = 3))
-    # model.add(Activation('relu'))
+    # model.add(Conv2D(32, kernel_size=(3,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
+    # model.add(MaxPooling2D((2,2)))
 
-    # model.add(Conv2D(32, kernel_size = (3,3), strides = (2,2), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(BatchNormalization(axis = 3))
-    # model.add(Activation('relu'))
+    # model.add(Conv2D(32, kernel_size=(3,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
+    # model.add(MaxPooling2D((2,2)))
 
-    # model.add(Conv2D(32, kernel_size = (3,3), strides = (2,2), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(BatchNormalization(axis = 3))
-    # model.add(Activation('relu'))
+    model.add(Flatten())
 
-    # model.add(Conv2D(64, kernel_size = (3,3), strides = (2,2), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(BatchNormalization(axis = 3))
-    # model.add(Activation('relu'))
+    model.add(Dense(64, activation='relu'))
 
-    # model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same', input_shape = (64,64,3), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-    # model.add(Dropout(0.5))
-
-    # model.add(Conv2D(filters=32, kernel_size=(3, 3), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
-    # model.add(Dropout(0.25))
-
-    # model.add(Conv2D(64, (3, 3), activity_regularizer=keras.regularizers.l2(1e-8)))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    # model.add(Flatten())
-    # model.add(Dense(64))
-    # model.add(Activation("relu"))
-    # model.add(Dropout(0.5))
-    # model.add(Dropout(0.5))
-    # model.add(Dense(100))
-    # model.add(Activation('relu'))
-
-    # model.add(Dense(1))
-    # model.add(Activation('sigmoid'))
-
-    # opt = SGD(learning_rate=0.001, momentum=0.9)
-    # model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-    # model.fit(X_train[0:2000], Y_train[0:2000], batch_size=32, epochs=12, verbose=1, shuffle=True)
+    model.add(Dense(1, activation='sigmoid'))
+    
+    opt = Adam(learning_rate=0.01)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(X_train[0:8000], Y_train[0:8000], batch_size=32, epochs=12, verbose=1, shuffle=True, validation_split=0.2)
 
     
 
