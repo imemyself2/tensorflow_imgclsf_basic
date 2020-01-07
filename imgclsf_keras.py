@@ -31,17 +31,19 @@ try:
     model.load_weights("D:\\Work\\College\\Spring 2020\\DeepLearningCoursera-2\\gitcode\\modelV1_weights.h5")
     print("model and weights loaded successfully.")
 except:
-    X_train, Y_train = imginput(dog_train_dir, cat_train_dir, 128)
+    X_train, Y_train = imginput(dog_train_dir, cat_train_dir, 32)
 
     model = Sequential()
     
-    model.add(Conv2D(filters=32, kernel_size=(7, 7), input_shape = (128,128,3), activity_regularizer=keras.regularizers.l2(1e-4)))
+    model.add(Conv2D(filters=32, kernel_size=(5, 5), input_shape = (32,32,3), activity_regularizer=keras.regularizers.l2(1e-8)))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D((2, 2)))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(Dropout(0.25))
 
-    model.add(Conv2D(filters=32, kernel_size=(4, 4), activity_regularizer=keras.regularizers.l2(0.0001)))
+    model.add(Conv2D(filters=32, kernel_size=(5, 5), activity_regularizer=keras.regularizers.l2(1e-8)))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(2,2))
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+    model.add(Dropout(0.25))
 
     model.add(Conv2D(64, (3, 3), activity_regularizer=keras.regularizers.l2(0.0001)))
     model.add(BatchNormalization(axis=-1))
@@ -49,22 +51,25 @@ except:
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())
-    model.add(Dense(64))
+    model.add(Dense(120))
     model.add(Activation("relu"))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))
+    # model.add(Dropout(0.5))
+    model.add(Dense(84))
+    model.add(Activation('relu'))
 
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
 
-    model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(X_train[0:600], Y_train[0:600], batch_size=32, epochs=20, verbose=1, shuffle=True)
+    model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(X_train[0:6000], Y_train[0:6000], batch_size=32, epochs=40, verbose=1, shuffle=True)
 
     
 
 ## Evaluate test set
 req1 = input("test model? (y/n)")
 if req1 == 'y':
-    testimages, testlabels = load_test_img(dog_test_dir, cat_test_dir, 128)
+    testimages, testlabels = load_test_img(dog_test_dir, cat_test_dir, 32)
     result = model.evaluate(x=testimages, y=testlabels, batch_size=32, verbose=1)
 
     print("Loss: "+str(result[0]))
@@ -79,9 +84,9 @@ else:
 
 ## Custom prediction data
 pred_img = cv2.imread("D:\\Work\College\\Spring 2020\\DeepLearningCoursera-2\\testimg.jpg")
-pred_img = cv2.resize(pred_img, (128, 128))
+pred_img = cv2.resize(pred_img, (32, 32))
 pred_img = pred_img/255
-pred_arr = np.ndarray((1, 128, 128, 3))
+pred_arr = np.ndarray((1, 32, 32, 3))
 pred_arr += pred_img
 
 print(model.predict(pred_arr, 1))
