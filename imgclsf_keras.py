@@ -37,12 +37,9 @@ except:
 
     model = Sequential()
 
-    model.add(Conv2D(32, kernel_size=(3,3), input_shape=(64,64,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
-    model.add(MaxPooling2D((2,2)))
-    model.add(Dropout(0.4))
-
+    model.add(Conv2D(32, kernel_size=(3,3), input_shape=(64,64,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8), padding='same'))
     model.add(Conv2D(32, kernel_size=(3,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
-    model.add(MaxPooling2D((2,2)))
+    model.add(MaxPooling2D((2,2), strides=(2,2)))
     model.add(Dropout(0.4))
 
     # model.add(Conv2D(32, kernel_size=(3,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8)))
@@ -54,12 +51,13 @@ except:
     model.add(Flatten())
 
     model.add(Dense(64, activation='relu'))
-
+    model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.4))
     model.add(Dense(1, activation='sigmoid'))
     
     opt = Adam(learning_rate=0.01)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(X_train[0:8000], Y_train[0:8000], batch_size=32, epochs=12, verbose=1, shuffle=True, validation_split=0.2)
+    model.fit(X_train[0:8000], Y_train[0:8000], batch_size=32, epochs=25, verbose=1, shuffle=True, validation_split=0.2)
 
     
 
