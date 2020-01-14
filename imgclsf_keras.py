@@ -31,29 +31,15 @@ try:
     print("model and weights loaded successfully.")
 except:
     X_train, Y_train = imginput(dog_train_dir, cat_train_dir, 64)
-
-    # model = Sequential()
-
-    # model.add(Conv2D(32, kernel_size=(3,3), kernel_initializer='he_uniform', input_shape=(64,64,3), activation='relu', activity_regularizer=keras.regularizers.l2(1e-8), padding='same'))
-    # model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
-    # model.add(Flatten())
-    # model.add(Dense(128, activation='relu'))
-    # model.add(Dropout(0.4))
-    # model.add(Dense(1, activation='sigmoid'))
-    
-    # opt = Adam(learning_rate=0.01)
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model = VGG16(include_top=False, input_shape=(64, 64, 3))
-	# mark loaded layers as not trainable
     for layer in model.layers:
 	    layer.trainable = False
-	# add new classifier layers
     flat1 = Flatten()(model.layers[-1].output)
     class1 = Dense(128, activation='relu', kernel_initializer='he_uniform')(flat1)
     output = Dense(1, activation='sigmoid')(class1)
-	# define new model
+
     model = Model(inputs=model.inputs, outputs=output)
-	# compile model
+
     opt = SGD(lr=0.001, momentum=0.9)
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
     model.fit(X_train[0:8000], Y_train[0:8000], batch_size=32, epochs=25, verbose=1, shuffle=True, validation_split=0.2)
@@ -63,12 +49,11 @@ except:
 ## Evaluate test set
 req1 = input("test model? (y/n)")
 if req1 == 'y':
-    for i in range(5):
-        testimages, testlabels = load_test_img(dog_test_dir, cat_test_dir, 64)
-        result = model.evaluate(x=testimages, y=testlabels, batch_size=32, verbose=1)
+    testimages, testlabels = load_test_img(dog_test_dir, cat_test_dir, 64)
+    result = model.evaluate(x=testimages, y=testlabels, batch_size=32, verbose=1)
 
-        print("Loss: "+str(result[0]))
-        print("Accuracy: "+str(result[1]))
+    print("Loss: "+str(result[0]))
+    print("Accuracy: "+str(result[1]))
 
 req2 = input("Save weights and model? (y/n)")
 if(req2 == 'y'):
@@ -84,7 +69,11 @@ pred_img = pred_img/255
 pred_arr = np.ndarray((1, 64, 64, 3))
 pred_arr += pred_img
 
-for i in range(5):
-    print(model.predict(pred_arr, 1))
+prediction = model.predict(pred_arr, 1)*100
+if model.predict(pred_arr, 1) > 0.5:
+    print("DOG: ", prediction[0][0])
+else: 
+    print("CAT: ", (100-prediction[0][0]))
+
 # print(pred_arr.shape)
 # print(pred_arr)
